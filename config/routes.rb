@@ -1,11 +1,16 @@
 Rails.application.routes.draw do
-  devise_for :users
-  authenticated :user do
-    root "offers#index", as: :authenticated_root
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      get 'offers/index'
+    end
   end
 
-  root 'landing_page#index'
+  devise_for :users
+  # authenticated :user do
+  #   root "offers#index", as: :authenticated_root
+  #   get '/*path' => 'api/v1/offers#index'
+  # end
 
-  resources :offers, only: :index
-  # resources :genders # TODO: admin page to manage
+  root 'landing_page#index'
+  get '/*path' => 'landing_page#index'
 end

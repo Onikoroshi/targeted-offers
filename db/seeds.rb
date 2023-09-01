@@ -28,6 +28,6 @@ available_genders = Gender.all.to_a
   )
 end
 
-# 100.times { |i|
-#   Offer.create({ description: Faker::Marketing.buzzwords})
-# }
+100.times { |i|
+  Offer.create({ description: Faker::Marketing.buzzwords})
+}
