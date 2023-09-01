@@ -11,7 +11,10 @@ export default() => (
         </p>
         <hr className="my-4" />
         <Link
-          to="/offers"
+          to="/users/sign_up"
+          onClick={() => {
+            window.location.href = "/users/sign_up";
+          }}
           className="btn btn-lg custom-button"
           role="button"
         >
