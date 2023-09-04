@@ -4,6 +4,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  belongs_to :gender
+
   validates :email, uniqueness: true
   validates :username, uniqueness: true
 
@@ -13,8 +15,6 @@ class User < ApplicationRecord
   validates :last_name, presence: true
   validates :birthdate, presence: true
   validates :gender, presence: true
-
-  belongs_to :gender
 
   def age
     today = Date.today

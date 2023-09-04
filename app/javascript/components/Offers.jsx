@@ -22,7 +22,8 @@ const Offers = () => {
     <div key={index} className="col-md-6 col-lg-4">
       <div className="card mb-4">
         <div className="card-body">
-          <h5 className="card-title">{offer.description}</h5>
+          <h2 className="card-title">{offer.description}</h2>
+          <p>Targeted To {offer.criterion_display}</p>
         </div>
       </div>
     </div>

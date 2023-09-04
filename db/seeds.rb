@@ -28,6 +28,15 @@ available_genders = Gender.all.to_a
   )
 end
 
-100.times { |i|
-  Offer.create({ description: Faker::Marketing.buzzwords})
-}
+100.times do |i|
+  min_age = Faker::Number.between(from: 20, to: 50)
+  max_age = Faker::Number.between(from: min_age + 1, to: min_age + rand(5..10))
+  Offer.create(
+    description: Faker::Marketing.buzzwords,
+    offer_criteria: [OfferCriterion.create(
+      min_age: min_age,
+      max_age: max_age,
+      genders: Gender.all.to_a.sample(Faker::Number.between(from: 1, to: (Gender.count / 2) + 1))
+    )]
+  )
+end
