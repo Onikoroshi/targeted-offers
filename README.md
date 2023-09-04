@@ -14,17 +14,20 @@
   * react version 18
 
 * Configuration
-  * bundle install
-  * yarn install
+  * `bundle install`
+  * `yarn install`
 
 * Database creation
-  * rails db:create
+  * `rails db:create`
 
 * Database initialization
-  * rails db:rebuild
+  * `rails db:rebuild`
 
 * How to run the test suite
-  * rspec spec
+  * `rspec spec`
+
+* How to start the server
+  * `bin/dev`
 
 ## Explanation of Gender Decision
 
