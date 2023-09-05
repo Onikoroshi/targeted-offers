@@ -17,4 +17,20 @@ RSpec.describe User, type: :model do
     it { is_expected.to validate_presence_of(:birthdate) }
     it { is_expected.to validate_presence_of(:gender) }
   end
+
+  context "calculations" do
+    context "age" do
+      context "is year difference when after birth day" do
+        subject { create(:user, birthdate: 20.years.ago - 1.days).age }
+
+        it { is_expected.to eq 20 }
+      end
+
+      context "is one year less if before birth day" do
+        subject { create(:user, birthdate: 20.years.ago + 5.days).age }
+
+        it { is_expected.to eq 19 }
+      end
+    end
+  end
 end

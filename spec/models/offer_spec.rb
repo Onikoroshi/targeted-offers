@@ -22,7 +22,7 @@ RSpec.describe Offer, type: :model do
     context "offers targeted to a certain user" do
       let(:genders) { [create(:gender, value: "Male"), create(:gender, value: "Female"), create(:gender, value: "Trans Male"), create(:gender, value: "Trans Female")] }
 
-      let(:user) { create(:user, gender: genders[1], birthdate: 38.years.ago.to_date) }
+      let(:user) { create(:user, gender: genders[1], birthdate: 38.years.ago.to_date - 2.days) }
 
       let(:gender_match_too_young) { create(:offer, :define_genders_and_age_range, gender_values: ["Female", "Trans Male"], min_age: 40, max_age: 42) }
 
