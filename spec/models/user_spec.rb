@@ -26,6 +26,12 @@ RSpec.describe User, type: :model do
         it { is_expected.to eq 20 }
       end
 
+      context "is year difference when on birth day" do
+        subject { create(:user, birthdate: Time.zone.today - 20.years).age }
+
+        it { is_expected.to eq 20 }
+      end
+
       context "is one year less if before birth day" do
         subject { create(:user, birthdate: 20.years.ago + 5.days).age }
 
