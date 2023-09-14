@@ -6,6 +6,9 @@ class User < ApplicationRecord
 
   belongs_to :gender
 
+  has_many :chosen_offers
+  has_many :offers, through: :chosen_offers
+
   validates :email, uniqueness: true
   validates :username, uniqueness: true
 

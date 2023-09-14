@@ -1,7 +1,12 @@
 class Offer < ApplicationRecord
   has_one :offer_criterion
 
+  has_many :chosen_offers
+  has_many :users, through: :chosen_offers
+
   validates :description, presence: true
+
+  scope :unchosen_by, ->(given_user) { left_joins(:chosen_offers).where("chosen_offers.user_id IS NULL OR chosen_offers.user_id != ?", given_user.id) }
 
   scope :for_user, ->(given_user) { joins(offer_criterion: [{ gender_offer_criteria: :gender }]).where("offer_criteria.min_age <= ? AND offer_criteria.max_age >= ? AND genders.id = ?", given_user.age, given_user.age, given_user.gender_id) }
 

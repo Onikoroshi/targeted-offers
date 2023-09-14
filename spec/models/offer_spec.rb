@@ -48,5 +48,48 @@ RSpec.describe Offer, type: :model do
         expect(Offer.for_user(user)).to match_array [ gender_match_young_match, gender_match_old_match, gender_match_mid_age_match ]
       end
     end
+
+    context "excluding offers already chosen by a user" do
+      let(:user) { create(:user) }
+      let(:chosen_by_noone) { create(:offer) }
+
+      subject { Offer.unchosen_by(user) }
+
+      before(:each) do
+        chosen_by_noone.save!
+      end
+
+      context "when there are no offers chosen by anyone" do
+        it { is_expected.to_not be_empty }
+        it { is_expected.to match_array(Offer.all.to_a) }
+      end
+
+      context "when there are offers chosen by others" do
+        let(:user2) { create(:user) }
+        let(:chosen_by_another) { create(:offer) }
+
+        before(:each) do
+          chosen_by_another.save!
+          ChosenOffer.create!(offer: chosen_by_another, user: user2)
+        end
+
+        context "but none chosen by the user" do
+          it { is_expected.to_not be_empty }
+          it { is_expected.to match_array(Offer.all.to_a) }
+        end
+
+        context "and some chosen by the user" do
+          let(:chosen_by_me) { create(:offer) }
+
+          before(:each) do
+            chosen_by_me.save!
+            ChosenOffer.create!(offer:chosen_by_me, user: user)
+          end
+
+          it { is_expected.to_not be_empty }
+          it { is_expected.to match_array([chosen_by_noone, chosen_by_another]) }
+        end
+      end
+    end
   end
 end
