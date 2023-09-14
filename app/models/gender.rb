@@ -1,7 +1,7 @@
 class Gender < ApplicationRecord
   has_many :users
 
-  has_many :gender_offer_criteria
+  has_many :gender_offer_criteria, dependent: :destroy
   has_many :offer_criteria, through: :gender_offer_criteria
   has_many :offers, through: :offer_criteria
 

@@ -12,6 +12,17 @@ RSpec.describe Offer, type: :model do
   end
 
   context "reporting" do
+    it "displays the proper information as json" do
+      subject.save!
+      expected_hash = {
+        "id" => subject.id,
+        "description" => subject.description,
+        "criterion_display" => subject.criterion_display
+      }
+
+      expect(subject.as_json).to eq expected_hash
+    end
+
     it "properly displays the offer criterion" do
       subject = create(:offer, :define_genders_and_age_range, gender_values: ["Female", "Gay Male", "Trans Female"], min_age: 38, max_age: 42)
       expect(subject.criterion_display).to eq "Female, Gay Male, and Trans Female people between the ages of 38 and 42"

@@ -39,4 +39,53 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  context "actions" do
+    context "#choose_offer!" do
+      let(:offer) { create(:offer) }
+
+      context "when not given a valid offer" do
+        it "throws an exception when no offer at all" do
+          expect { subject.choose_offer!(nil) }.to raise_error "Validation failed: Offer must exist"
+        end
+
+        it "throws an exception when offer not in database" do
+          offer.save!
+          Offer.destroy_all
+          expect { subject.choose_offer!(offer) }.to raise_error ActiveRecord::InvalidForeignKey
+        end
+      end
+
+      context "when offer already chosen by another user" do
+        let(:user2) { create(:user) }
+        let(:existing_chosen) { ChosenOffer.create!(user: user2, offer: offer) }
+
+        before(:each) do
+          existing_chosen.save!
+        end
+
+        it "adds another chosen offer object for this user" do
+          expect(ChosenOffer.all.to_a).to match_array [existing_chosen]
+
+          my_chosen = subject.choose_offer!(offer)
+          expect(ChosenOffer.all.to_a).to match_array [existing_chosen, my_chosen]
+        end
+
+        context "when offer already chosen by this user" do
+          let(:my_chosen) { ChosenOffer.create!(user: subject, offer: offer) }
+
+          before(:each) do
+            my_chosen.save!
+          end
+
+          it "doesn't add another chosen offer object" do
+            expect(ChosenOffer.all.to_a).to match_array [existing_chosen, my_chosen]
+
+            chosen_again = subject.choose_offer!(offer)
+            expect(ChosenOffer.all.to_a).to match_array [existing_chosen, my_chosen]
+          end
+        end
+      end
+    end
+  end
 end

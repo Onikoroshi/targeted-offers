@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   belongs_to :gender
 
-  has_many :chosen_offers
+  has_many :chosen_offers, dependent: :destroy
   has_many :offers, through: :chosen_offers
 
   validates :email, uniqueness: true
@@ -23,5 +23,9 @@ class User < ApplicationRecord
     today = Date.today
     age = today.year - birthdate.year
     (today.strftime("%m%d").to_i >= birthdate.strftime("%m%d").to_i) ? age : age - 1
+  end
+
+  def choose_offer!(target_offer)
+    ChosenOffer.find_or_create_by!(user: self, offer: target_offer)
   end
 end

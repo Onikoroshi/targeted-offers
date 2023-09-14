@@ -1,7 +1,7 @@
 class Offer < ApplicationRecord
-  has_one :offer_criterion
+  has_one :offer_criterion, dependent: :destroy
 
-  has_many :chosen_offers
+  has_many :chosen_offers, dependent: :destroy
   has_many :users, through: :chosen_offers
 
   validates :description, presence: true
@@ -15,7 +15,7 @@ class Offer < ApplicationRecord
   end
 
   def as_json(options={})
-    super(only: [:description],
+    super(only: [:id, :description],
     methods: [:criterion_display])
   end
 end
