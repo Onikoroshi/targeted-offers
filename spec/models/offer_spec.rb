@@ -24,8 +24,8 @@ RSpec.describe Offer, type: :model do
     end
 
     it "properly displays the offer criterion" do
-      subject = create(:offer, :define_genders_and_age_range, gender_values: ["Female", "Gay Male", "Trans Female"], min_age: 38, max_age: 42)
-      expect(subject.criterion_display).to eq "Female, Gay Male, and Trans Female people between the ages of 38 and 42"
+      subject = create(:offer, :define_genders_and_age_range, gender_values: ["Female", "Gay Male", "Trans Female"], min_age: 38, max_age: 42, active_from: Time.zone.today - 1.day, active_to: Time.zone.today + 1.day)
+      expect(subject.criterion_display).to eq "Female, Gay Male, and Trans Female people between the ages of 38 and 42. Active from #{Time.zone.today - 1.day} to #{Time.zone.today + 1.day}"
     end
   end
 
@@ -35,28 +35,40 @@ RSpec.describe Offer, type: :model do
 
       let(:user) { create(:user, gender: genders[1], birthdate: 38.years.ago.to_date - 2.days) }
 
-      let(:gender_match_too_young) { create(:offer, :define_genders_and_age_range, gender_values: ["Female", "Trans Male"], min_age: 40, max_age: 42) }
+      let(:present_chosen_offer) { create(:offer, :define_genders_and_age_range, active_from: Time.zone.today + 5.days, active_to: Time.zone.today + 10.days) }
 
-      let(:gender_match_too_old) { create(:offer, :define_genders_and_age_range, gender_values: ["Female"], min_age: 18, max_age: 36) }
+      let(:gender_match_too_young_available) { create(:offer, :define_genders_and_age_range, gender_values: ["Female", "Trans Male"], min_age: 40, max_age: 42, active_from: Time.zone.today, active_to: Time.zone.today + 2.days) }
 
-      let(:gender_match_young_match) { create(:offer, :define_genders_and_age_range, gender_values: ["Male", "Female", "Trans Male"], min_age: 38, max_age: 42) }
+      let(:gender_match_too_old_available) { create(:offer, :define_genders_and_age_range, gender_values: ["Female"], min_age: 18, max_age: 36, active_from: Time.zone.today - 2.days, active_to: Time.zone.today) }
 
-      let(:gender_match_old_match) { create(:offer, :define_genders_and_age_range, gender_values: ["Trans Female", "Female"], min_age: 35, max_age: 38) }
+      let(:gender_match_young_match_available) { create(:offer, :define_genders_and_age_range, gender_values: ["Male", "Female", "Trans Male"], min_age: 38, max_age: 42, active_from: Time.zone.today - 1.day, active_to: Time.zone.today + 2.days) }
 
-      let(:gender_match_mid_age_match) { create(:offer, :define_genders_and_age_range, gender_values: ["Trans Male", "Trans Female", "Female"], min_age: 35, max_age: 42) }
+      let(:gender_match_young_match_unavailable) { create(:offer, :define_genders_and_age_range, gender_values: ["Male", "Female", "Trans Male"], min_age: 38, max_age: 42, active_from: Time.zone.today - 1.day, active_to: Time.zone.today - 1.day) }
 
-      let(:gender_not_match_mid_age_match) { create(:offer, :define_genders_and_age_range, gender_values: ["Trans Female", "Male", "Trans Male"], min_age: 35, max_age: 42) }
+      let(:gender_match_old_match_available) { create(:offer, :define_genders_and_age_range, gender_values: ["Trans Female", "Female"], min_age: 35, max_age: 38, active_from: Time.zone.today, active_to: Time.zone.today) }
+
+      let(:gender_match_old_match_available_overlap) { create(:offer, :define_genders_and_age_range, gender_values: ["Trans Female", "Female"], min_age: 35, max_age: 38, active_from: Time.zone.today + 6.days, active_to: Time.zone.today + 7.days) }
+
+      let(:gender_match_old_match_unavailable) { create(:offer, :define_genders_and_age_range, gender_values: ["Trans Female", "Female"], min_age: 35, max_age: 38, active_from: Time.zone.today - 5.days, active_to: Time.zone.today - 1.day) }
+
+      let(:gender_match_mid_age_match_available) { create(:offer, :define_genders_and_age_range, gender_values: ["Trans Male", "Trans Female", "Female"], min_age: 35, max_age: 42, active_from: Time.zone.today - 1.day, active_to: Time.zone.today + 1.day) }
+
+      let(:gender_match_mid_age_match_unavailable) { create(:offer, :define_genders_and_age_range, gender_values: ["Trans Male", "Trans Female", "Female"], min_age: 35, max_age: 42, active_from: Time.zone.today - 3.days, active_to: Time.zone.today - 1.day) }
+
+      let(:gender_not_match_mid_age_match_available) { create(:offer, :define_genders_and_age_range, gender_values: ["Trans Female", "Male", "Trans Male"], min_age: 35, max_age: 42, active_from: Time.zone.today - 1.day, active_to: Time.zone.today + 1.day) }
 
       subject {}
 
       before(:each) do
         genders.each{ |g| g.save! }
+
+        user.choose_offer!(present_chosen_offer)
       end
 
       it "includes only the correct offers" do
-        expect(Offer.all).to match_array [ gender_match_young_match, gender_match_old_match, gender_match_mid_age_match, gender_match_too_young, gender_match_too_old, gender_not_match_mid_age_match ]
+        expect(Offer.all).to match_array [ gender_match_young_match_available, gender_match_young_match_unavailable, gender_match_old_match_available, gender_match_old_match_unavailable, gender_match_mid_age_match_available, gender_match_mid_age_match_unavailable, gender_match_too_young_available, gender_match_too_old_available, gender_not_match_mid_age_match_available, gender_match_old_match_available_overlap, present_chosen_offer ]
 
-        expect(Offer.for_user(user)).to match_array [ gender_match_young_match, gender_match_old_match, gender_match_mid_age_match ]
+        expect(Offer.for_user(user)).to match_array [ gender_match_young_match_available, gender_match_old_match_available, gender_match_mid_age_match_available ]
       end
     end
 

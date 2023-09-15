@@ -77,6 +77,7 @@ const Offers = () => {
         <div className="card-body">
           <h2 className="card-title">{offer.description}</h2>
           <p>Chosen on {offer.chosen_on}</p>
+          <p>{offer.display_active_range} </p>
         </div>
       </div>
     </div>

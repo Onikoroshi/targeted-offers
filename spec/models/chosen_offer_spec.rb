@@ -16,7 +16,8 @@ RSpec.describe ChosenOffer, type: :model do
     it "displays the proper information as json" do
       expected_hash = {
         "description" => subject.offer.description,
-        "chosen_on" => subject.chosen_on.to_s
+        "chosen_on" => subject.chosen_on.to_s,
+        "display_active_range" => subject.display_active_range
       }
 
       expect(subject.as_json).to eq expected_hash

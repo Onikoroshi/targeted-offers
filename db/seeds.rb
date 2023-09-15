@@ -31,11 +31,15 @@ end
 100.times do |i|
   min_age = Faker::Number.between(from: 20, to: 50)
   max_age = Faker::Number.between(from: min_age + 1, to: min_age + rand(5..10))
+  active_from = Faker::Date.between(from: 1.month.ago, to: 1.month.from_now)
+  active_to = Faker::Date.between(from: active_from, to: active_from + 1.month)
   Offer.create(
     description: Faker::Marketing.buzzwords,
     offer_criterion: OfferCriterion.create(
       min_age: min_age,
       max_age: max_age,
+      active_from: active_from,
+      active_to: active_to,
       genders: Gender.all.to_a.sample(Faker::Number.between(from: 1, to: (Gender.count / 2) + 1))
     )
   )

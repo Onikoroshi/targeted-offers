@@ -5,10 +5,14 @@ class ChosenOffer < ApplicationRecord
   delegate :description, to: :offer
 
   def as_json(options={})
-    super(only: [], methods: [:description, :chosen_on])
+    super(only: [], methods: [:description, :chosen_on, :display_active_range])
   end
 
   def chosen_on
     created_at.to_date
+  end
+
+  def display_active_range
+    "Active from #{offer.offer_criterion.active_from} to #{offer.offer_criterion.active_to}"
   end
 end
