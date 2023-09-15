@@ -20,7 +20,7 @@ class User < ApplicationRecord
   validates :gender, presence: true
 
   def age
-    today = Date.today
+    today = Time.zone.today
     age = today.year - birthdate.year
     (today.strftime("%m%d").to_i >= birthdate.strftime("%m%d").to_i) ? age : age - 1
   end
